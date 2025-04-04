@@ -1,0 +1,11 @@
+fastapi
+uvicorn
+openai
+langchain
+pinecone
+pydantic
+tqdm
+python-dotenv
+pymongo
+python-jose
+python-multipart
