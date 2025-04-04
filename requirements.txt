@@ -11,3 +11,4 @@ python-jose
 python-multipart
 langchain-openai
 langchain-pinecone
+langchain-community
