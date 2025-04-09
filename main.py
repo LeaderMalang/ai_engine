@@ -9,6 +9,7 @@ from utils.memory import get_chat_history
 from models.simulate_input import SimulateInput
 import uvicorn
 from datetime import timedelta
+from fastapi.responses import JSONResponse
 
 app = FastAPI(title="Simulation Ai Engine", version="2")
 # Allow all origins (dev mode)
@@ -19,6 +20,10 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+def serialize_template(doc):
+    doc["_id"] = str(doc["_id"])
+    return doc
 
 # Token endpoint
 @app.post("/token")
@@ -57,7 +62,34 @@ def get_template(category: str):
         return {"error": "Template not found"}
     return data
 
+# 🧠 Helper to serialize ObjectId
+def serialize_template(doc):
+    doc["id"] = str(doc["_id"])
+    del doc["_id"]
+    return doc
 
+# 🚀 Get all templates by category
+@app.get("/templates/{category}")
+def get_templates_by_category(category: str):
+    cursor = templates.find({"category": category})
+    data = [serialize_template(doc) for doc in cursor]
+
+    if not data:
+        return JSONResponse(status_code=404, content={"error": "No templates found for this category"})
+
+    return data
+
+
+
+@app.get("/templates")
+def get_templates_by_category():
+    cursor = templates.find()
+    data = [serialize_template(doc) for doc in cursor]
+
+    if not data:
+        return JSONResponse(status_code=404, content={"error": "No templates found for this category"})
+
+    return data
 
 @app.get("/user/{user_id}/history")
 def get_user_chat_history(user_id: str):
